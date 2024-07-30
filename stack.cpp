@@ -43,12 +43,99 @@ int prio(char c)
     else if (c == '*' || c == '/')
     {
         return 2;
+    } else if (c == '(')
+    {
+        return 3;
+    } else if (c == ')'){
+        return 0;
     }
 }
+
+
+void conversion()
+{   
+    c_exp = "";
+    c_len = -1;
+    string temp = "";
+    for(int i = 0;i<s_len;i++)
+    {
+        if(exp[i] == '+' || exp[i] == '-' || exp[i] == '*' || exp[i] == '/' || exp[i] == '(' || exp[i] == ')')
+        {   
+            if(temp != ""){
+                c_exp += " ";
+                c_exp += temp;
+                c_len++;
+                c_len += temp.length();
+                temp = "";
+            }
+            if(top == -1)
+            {
+                top++;
+                stack[top] = exp[i]; 
+            }
+            else if(prio(stack[top]) < prio(exp[i]) || stack[top] == '(')
+            {
+                top++;
+                stack[top] = exp[i];
+            }
+            else
+            {
+                while(stack[top] != '(' && prio(stack[top]) > prio(exp[i]) && top != -1)
+                {   
+                    c_exp += ' ';
+                    c_len++;
+                    c_exp += stack[top];
+                    c_len++;
+                    top--;
+
+                }
+                if(stack[top] == '('){
+                    top--;
+                }
+                if(exp[i] != ')'){
+                    top++;
+                    stack[top] = exp[i];
+                }
+            }
+        }
+        else if(exp[i] == ' ')
+        {   
+            c_exp += " ";
+            c_exp += temp;
+            c_len++;
+            c_len += temp.length();
+            temp = "";
+        }
+        else
+        {   
+            // c_exp += " ";
+            temp += exp[i];
+            // c_exp += exp[i];
+            // c_len++;
+            // c_len++;
+        }
+    }
+    if(temp != ""){
+        c_exp += temp;
+        temp += " ";    
+    }
+    while (top != -1)
+    {   
+        c_exp += " ";
+        c_len++;
+        c_exp += stack[top];
+        c_len++;
+        top--;
+    }
+    
+    cout<<"The converted expression is : "<<c_exp<<" len "<<c_len<<endl;
+}
+
 
 void evaluate()
 {   
     conversion();
+    // temp = "";
     for(int i = 0;i<=c_len;i++)
     {
         if(c_exp[i] == '+' || c_exp[i] == '-' || c_exp[i] == '*' || c_exp[i] == '/')
@@ -107,60 +194,6 @@ void evaluate()
     
     cout<<"The evaluated value is : "<<e_stack[0]<<endl;
     e_top = -1;
-}
-
-void conversion()
-{   
-    c_exp = "";
-    c_len = -1;
-    for(int i = 0;i<s_len;i++)
-    {
-        if(exp[i] == '+' || exp[i] == '-' || exp[i] == '*' || exp[i] == '/')
-        {   
-            if(top == -1)
-            {
-                top++;
-                stack[top] = exp[i]; 
-            }
-            else if(prio(stack[top]) < prio(exp[i]))
-            {
-                top++;
-                stack[top] = exp[i];
-            }
-            else
-            {
-                while(stack[top] > exp[i] || top != -1)
-                {   
-                    c_exp += ' ';
-                    c_len++;
-                    c_exp += stack[top];
-                    c_len++;
-                    top--;
-                }
-                top++;
-                stack[top] = exp[i];
-            }
-        }
-        else if(exp[i] == ' ')
-        {}
-        else
-        {   
-            c_exp += " ";
-            c_exp += exp[i];
-            c_len++;
-            c_len++;
-        }
-    }
-    while (top != -1)
-    {   
-        c_exp += " ";
-        c_len++;
-        c_exp += stack[top];
-        c_len++;
-        top--;
-    }
-    
-    cout<<"The converted expression is : "<<c_exp<<" len "<<c_len<<endl;
 }
 
 int main()
